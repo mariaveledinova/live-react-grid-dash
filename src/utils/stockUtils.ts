@@ -1,62 +1,70 @@
 
-import type { Stock } from '../types/stock';
+import type { Stock } from '@/types/stock';
 
-const stockData = [
-  { symbol: 'SNAP', name: 'Snap Inc.', sector: 'Technology' },
-  { symbol: 'TWTR', name: 'Twitter, Inc.', sector: 'Technology' },
-  { symbol: 'AAPL', name: 'Apple Inc.', sector: 'Technology' },
-  { symbol: 'MSFT', name: 'Microsoft Corporation', sector: 'Technology' },
-  { symbol: 'CSCO', name: 'Cisco Systems, Inc.', sector: 'Technology' },
-  { symbol: 'NVDA', name: 'NVIDIA Corporation', sector: 'Technology' },
-  { symbol: 'GOOGL', name: 'Alphabet Inc.', sector: 'Technology' },
-  { symbol: 'AMZN', name: 'Amazon.com Inc.', sector: 'Technology' },
-  { symbol: 'TSLA', name: 'Tesla, Inc.', sector: 'Technology' },
-  { symbol: 'META', name: 'Meta Platforms, Inc.', sector: 'Technology' },
-];
-
-export const generateMockStockData = (): Stock[] => {
-  return stockData.map(stock => {
-    const basePrice = Math.random() * 300 + 20;
-    const change = (Math.random() - 0.5) * 10;
-    const percentChange = (change / basePrice) * 100;
-    
-    // Generate chart data (20 points)
-    const chartData = Array.from({ length: 20 }, (_, i) => {
-      return basePrice + Math.sin(i * 0.3) * 10 + (Math.random() - 0.5) * 15;
-    });
-
-    return {
-      symbol: stock.symbol,
-      name: stock.name,
-      price: basePrice,
-      change,
-      percentChange,
-      volume: Math.floor(Math.random() * 100000000) + 1000000,
-      avgVolume: Math.floor(Math.random() * 50000000) + 5000000,
-      marketCap: Math.floor(Math.random() * 2000) + 100,
-      peRatio: Math.random() * 50 + 5,
-      oneDayChange: change,
-      sector: stock.sector,
-      chartData
-    };
-  });
+export const formatCurrency = (value: number): string => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(value);
 };
 
-export const formatNumber = (num: number, decimals: number = 2): string => {
-  return num.toFixed(decimals);
+export const formatPercentage = (value: number): string => {
+  return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`;
 };
 
-export const formatCurrency = (num: number): string => {
-  return `$${num.toFixed(2)}`;
-};
-
-export const formatPercentage = (num: number): string => {
-  return `${num.toFixed(2)}%`;
-};
-
-export const formatVolume = (num: number): string => {
-  if (num >= 1000000) {
-    return `${(num / 1000000).toFixed(1)}M`;
+export const formatVolume = (value: number): string => {
+  if (value >= 1000000000) {
+    return `${(value / 1000000000).toFixed(1)}B`;
   }
-  return `${(num / 1000).toFixed(0)}K`;
+  if (value >= 1000000) {
+    return `${(value / 1000000).toFixed(1)}M`;
+  }
+  if (value >= 1000) {
+    return `${(value / 1000).toFixed(0)}K`;
+  }
+  return value.toString();
+};
+
+export const getChangeColor = (change: number, percentChange: number = 0): string => {
+  if (change > 0 || percentChange > 0) return 'text-green-600';
+  if (change < 0 || percentChange < 0) return 'text-red-600';
+  return 'text-gray-600';
+};
+
+export const generateMockChartData = (basePrice: number, volatility: number = 0.05): number[] => {
+  const points = 20;
+  const data: number[] = [];
+  let currentPrice = basePrice;
+  
+  for (let i = 0; i < points; i++) {
+    const change = (Math.random() - 0.5) * volatility * basePrice;
+    currentPrice += change;
+    data.push(Math.max(0, currentPrice));
+  }
+  
+  return data;
+};
+
+export const calculateTotalMarketCap = (stocks: Stock[]): number => {
+  return stocks.reduce((total, stock) => total + stock.marketCap, 0);
+};
+
+export const getTopGainers = (stocks: Stock[], limit: number = 5): Stock[] => {
+  return [...stocks]
+    .sort((a, b) => b.percentChange - a.percentChange)
+    .slice(0, limit);
+};
+
+export const getTopLosers = (stocks: Stock[], limit: number = 5): Stock[] => {
+  return [...stocks]
+    .sort((a, b) => a.percentChange - b.percentChange)
+    .slice(0, limit);
+};
+
+export const getMostActive = (stocks: Stock[], limit: number = 5): Stock[] => {
+  return [...stocks]
+    .sort((a, b) => b.volume - a.volume)
+    .slice(0, limit);
 };

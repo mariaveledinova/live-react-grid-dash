@@ -10,6 +10,6 @@ export interface Stock {
   marketCap: number;
   peRatio: number;
   oneDayChange: number;
-  sector: string;
   chartData: number[];
+  sector: string;
 }
