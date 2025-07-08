@@ -159,13 +159,15 @@ export const StockGrid: React.FC<StockGridProps> = ({
           <thead className="bg-gray-50 border-b">
             <tr>
               <th className="p-4 text-left">
-                <Checkbox
-                  checked={allSelected}
-                  ref={(el) => {
-                    if (el) el.indeterminate = someSelected;
-                  }}
-                  onChange={(checked) => onSelectAll(checked)}
-                />
+                <div className="flex items-center">
+                  <Checkbox
+                    checked={allSelected}
+                    onCheckedChange={(checked) => onSelectAll(checked === true)}
+                  />
+                  {someSelected && !allSelected && (
+                    <div className="ml-1 w-2 h-2 bg-blue-500 rounded-sm" />
+                  )}
+                </div>
               </th>
               <th className="p-4 text-left">
                 <Button variant="ghost" onClick={() => handleSort('symbol')} className="font-semibold">
@@ -217,7 +219,7 @@ export const StockGrid: React.FC<StockGridProps> = ({
                 <td className="p-4">
                   <Checkbox
                     checked={selectedStocks.has(stock.symbol)}
-                    onChange={(checked) => onStockSelect(stock.symbol, checked)}
+                    onCheckedChange={(checked) => onStockSelect(stock.symbol, checked === true)}
                   />
                 </td>
                 <td className="p-4 font-mono font-semibold text-blue-600">{stock.symbol}</td>
