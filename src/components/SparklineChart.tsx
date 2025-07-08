@@ -15,9 +15,15 @@ export const SparklineChart: React.FC<SparklineChartProps> = ({
   height = 40
 }) => {
   if (!data || data.length < 2) {
-    return <div className="w-full h-full bg-gray-100 rounded flex items-center justify-center">
-      <span className="text-xs text-gray-400">No data</span>
-    </div>;
+    return (
+      <div 
+        className="w-full h-full bg-gray-100 rounded flex items-center justify-center"
+        role="img"
+        aria-label="No chart data available"
+      >
+        <span className="text-xs text-gray-400">No data</span>
+      </div>
+    );
   }
 
   const min = Math.min(...data);
@@ -37,9 +43,24 @@ export const SparklineChart: React.FC<SparklineChartProps> = ({
   // Create fill path
   const fillPath = `${pathData} L ${width},${height} L 0,${height} Z`;
 
+  const trend = data[data.length - 1] > data[0] ? 'increasing' : 'decreasing';
+  const percentChange = ((data[data.length - 1] - data[0]) / data[0] * 100);
+
   return (
     <div className="w-full h-full">
-      <svg width={width} height={height} className="overflow-visible">
+      <svg 
+        width={width} 
+        height={height} 
+        className="overflow-visible"
+        role="img"
+        aria-label={`Stock price chart showing ${trend} trend with ${Math.abs(percentChange).toFixed(1)}% change`}
+      >
+        <title>Stock Price Chart</title>
+        <desc>
+          A sparkline chart showing price movement over time. 
+          Trend is {trend} with a {percentChange >= 0 ? 'gain' : 'loss'} of {Math.abs(percentChange).toFixed(1)}%.
+        </desc>
+        
         <defs>
           <linearGradient id={`gradient-${color.replace('#', '')}`} x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor={color} stopOpacity="0.2" />
@@ -51,6 +72,7 @@ export const SparklineChart: React.FC<SparklineChartProps> = ({
         <path
           d={fillPath}
           fill={`url(#gradient-${color.replace('#', '')})`}
+          aria-hidden="true"
         />
         
         {/* Line */}
@@ -61,6 +83,7 @@ export const SparklineChart: React.FC<SparklineChartProps> = ({
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
+          aria-hidden="true"
         />
       </svg>
     </div>
