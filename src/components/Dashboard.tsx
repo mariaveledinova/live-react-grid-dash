@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Trash2, Search, TrendingUp, TrendingDown } from 'lucide-react';
 import { StockGrid } from './StockGrid';
 import { generateMockStockData } from '../utils/stockUtils';
@@ -15,7 +14,7 @@ const Dashboard = () => {
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [selectedStocks, setSelectedStocks] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedSector, setSelectedSector] = useState('All');
+  const [selectedSector, setSelectedSector] = useState('Technology');
   const [viewMode, setViewMode] = useState<'list' | 'heatmap' | 'virtualized'>('list');
 
   // Initialize with mock data
@@ -86,97 +85,69 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
+      <div className="max-w-7xl mx-auto space-y-4">
+        {/* Top Controls */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Stock Dashboard</h1>
-            <p className="text-gray-600 mt-1">Real-time market monitoring and analysis</p>
+          <div className="flex items-center gap-2">
+            <Button size="sm" className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50">
+              <Plus className="h-4 w-4 mr-2" />
+              Add new
+            </Button>
+            <Button 
+              size="sm" 
+              variant="destructive" 
+              disabled={selectedStocks.size === 0}
+              onClick={handleRemoveSelected}
+              className="bg-white border border-gray-300 text-red-600 hover:bg-red-50"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Remove
+            </Button>
           </div>
-          <div className="flex items-center gap-4">
-            <Badge variant="outline" className="px-3 py-1">
-              <TrendingUp className="h-4 w-4 mr-1 text-green-600" />
-              {gainers} Gainers
-            </Badge>
-            <Badge variant="outline" className="px-3 py-1">
-              <TrendingDown className="h-4 w-4 mr-1 text-red-600" />
-              {losers} Losers
-            </Badge>
-            <Badge variant="outline" className="px-3 py-1">
-              Total: ${totalValue.toFixed(1)}B
-            </Badge>
+          
+          <div className="flex items-center gap-2">
+            <Button 
+              size="sm" 
+              variant={viewMode === 'list' ? 'default' : 'outline'}
+              onClick={() => setViewMode('list')}
+              className="bg-white border border-gray-300 text-gray-700"
+            >
+              Stock List
+            </Button>
+            <Button 
+              size="sm" 
+              variant={viewMode === 'heatmap' ? 'default' : 'outline'}
+              onClick={() => setViewMode('heatmap')}
+              className="bg-white border border-gray-300 text-gray-700"
+            >
+              Heatmap View
+            </Button>
+            <Button 
+              size="sm" 
+              variant={viewMode === 'virtualized' ? 'default' : 'outline'}
+              onClick={() => setViewMode('virtualized')}
+              className="bg-white border border-gray-300 text-gray-700"
+            >
+              Virtualized
+            </Button>
           </div>
-        </div>
-
-        {/* Controls */}
-        <Card className="p-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-4">
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                <Plus className="h-4 w-4 mr-2" />
-                Add new
-              </Button>
-              <Button 
-                size="sm" 
-                variant="destructive" 
-                disabled={selectedStocks.size === 0}
-                onClick={handleRemoveSelected}
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Remove ({selectedStocks.size})
-              </Button>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <Button 
-                size="sm" 
-                variant={viewMode === 'list' ? 'default' : 'outline'}
-                onClick={() => setViewMode('list')}
-              >
-                Stock List
-              </Button>
-              <Button 
-                size="sm" 
-                variant={viewMode === 'heatmap' ? 'default' : 'outline'}
-                onClick={() => setViewMode('heatmap')}
-              >
-                Heatmap View
-              </Button>
-              <Button 
-                size="sm" 
-                variant={viewMode === 'virtualized' ? 'default' : 'outline'}
-                onClick={() => setViewMode('virtualized')}
-              >
-                Virtualized
-              </Button>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Search stocks..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            
+          
+          <div className="flex items-center">
+            <span className="text-sm text-gray-600 mr-2">Sector:</span>
             <Select value={selectedSector} onValueChange={setSelectedSector}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Select Sector" />
+              <SelectTrigger className="w-32 h-8 bg-white border-gray-300">
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {sectors.map(sector => (
                   <SelectItem key={sector} value={sector}>
-                    Sector: {sector}
+                    {sector}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
-        </Card>
+        </div>
 
         {/* Stock Grid */}
         <StockGrid

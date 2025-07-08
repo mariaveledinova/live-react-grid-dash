@@ -153,12 +153,12 @@ export const StockGrid: React.FC<StockGridProps> = ({
   };
 
   return (
-    <Card className="overflow-hidden">
+    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b">
-            <tr>
-              <th className="p-4 text-left">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-gray-50 border-b border-gray-200">
+              <th className="px-4 py-3 text-left w-12">
                 <div className="flex items-center">
                   <Checkbox
                     checked={allSelected}
@@ -169,83 +169,93 @@ export const StockGrid: React.FC<StockGridProps> = ({
                   )}
                 </div>
               </th>
-              <th className="p-4 text-left">
-                <Button variant="ghost" onClick={() => handleSort('symbol')} className="font-semibold">
-                  Symbol {getSortIcon('symbol')}
-                </Button>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                S...
               </th>
-              <th className="p-4 text-left">
-                <Button variant="ghost" onClick={() => handleSort('name')} className="font-semibold">
-                  Name {getSortIcon('name')}
-                </Button>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Name
               </th>
-              <th className="p-4 text-left">
-                <Button variant="ghost" onClick={() => handleSort('price')} className="font-semibold">
-                  Price {getSortIcon('price')}
-                </Button>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <div className="flex flex-col">
+                  <span>Price</span>
+                  <span className="text-xs text-gray-400 normal-case">(Intraday)</span>
+                </div>
               </th>
-              <th className="p-4 text-left">
-                <Button variant="ghost" onClick={() => handleSort('change')} className="font-semibold">
-                  Change {getSortIcon('change')}
-                </Button>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Change
               </th>
-              <th className="p-4 text-left">
-                <Button variant="ghost" onClick={() => handleSort('percentChange')} className="font-semibold">
-                  % Change {getSortIcon('percentChange')}
-                </Button>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                % Chan...
               </th>
-              <th className="p-4 text-left">
-                <Button variant="ghost" onClick={() => handleSort('volume')} className="font-semibold">
-                  Volume {getSortIcon('volume')}
-                </Button>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Volume
               </th>
-              <th className="p-4 text-left">Avg Vol<br/><span className="text-xs text-gray-500">(3 months)</span></th>
-              <th className="p-4 text-left">Market Cap<br/><span className="text-xs text-gray-500">(TTM)</span></th>
-              <th className="p-4 text-left">
-                <Button variant="ghost" onClick={() => handleSort('peRatio')} className="font-semibold">
-                  PE Ratio {getSortIcon('peRatio')}
-                </Button>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <div className="flex flex-col">
+                  <span>Avg Vol</span>
+                  <span className="text-xs text-gray-400 normal-case">(3 months)</span>
+                </div>
               </th>
-              <th className="p-4 text-left">
-                <Button variant="ghost" onClick={() => handleSort('oneDayChange')} className="font-semibold">
-                  1 Day Chart {getSortIcon('oneDayChange')}
-                </Button>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <div className="flex flex-col">
+                  <span>Market C...</span>
+                  <span className="text-xs text-gray-400 normal-case">(TTM)</span>
+                </div>
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <div className="flex flex-col">
+                  <span>PE Ratio</span>
+                  <span className="text-xs text-gray-400 normal-case">(TTM)</span>
+                </div>
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                1 Day C...
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="bg-white divide-y divide-gray-200">
             {sortedStocks.map((stock) => (
-              <tr key={stock.symbol} className="border-b hover:bg-gray-50 group">
-                <td className="p-4">
+              <tr key={stock.symbol} className="hover:bg-gray-50 group">
+                <td className="px-4 py-3">
                   <Checkbox
                     checked={selectedStocks.has(stock.symbol)}
                     onCheckedChange={(checked) => onStockSelect(stock.symbol, checked === true)}
                   />
                 </td>
-                <td className="p-4 font-mono font-semibold text-blue-600">{stock.symbol}</td>
-                <td className="p-4">{stock.name}</td>
-                <td className="p-4">
-                  <EditableCell stock={stock} field="price" value={stock.price} type="currency" />
+                <td className="px-4 py-3 font-medium text-blue-600">{stock.symbol}</td>
+                <td className="px-4 py-3 text-gray-900">{stock.name}</td>
+                <td className="px-4 py-3 text-gray-900 font-medium">
+                  {formatValue(stock.price, 'currency')}
                 </td>
-                <td className="p-4">
-                  <EditableCell stock={stock} field="change" value={stock.change} type="currency" />
+                <td className="px-4 py-3">
+                  <span className={getChangeColor(stock.change)}>
+                    {formatValue(stock.change, 'currency')}
+                  </span>
                 </td>
-                <td className="p-4">
-                  <EditableCell stock={stock} field="percentChange" value={stock.percentChange} type="percentage" />
+                <td className="px-4 py-3">
+                  <span className={getChangeColor(stock.percentChange)}>
+                    {formatValue(stock.percentChange, 'percentage')}
+                  </span>
                 </td>
-                <td className="p-4">
-                  <EditableCell stock={stock} field="volume" value={stock.volume} type="volume" />
+                <td className="px-4 py-3 text-gray-900">
+                  {formatValue(stock.volume, 'volume')}
                 </td>
-                <td className="p-4 text-gray-600">{formatValue(stock.avgVolume, 'volume')}</td>
-                <td className="p-4 text-gray-600">{formatValue(stock.marketCap, 'volume')}B</td>
-                <td className="p-4">
-                  <EditableCell stock={stock} field="peRatio" value={stock.peRatio} type="number" />
+                <td className="px-4 py-3 text-gray-600">
+                  {formatValue(stock.avgVolume, 'volume')}
                 </td>
-                <td className="p-4">
-                  <div className="w-24 h-12">
+                <td className="px-4 py-3 text-gray-600">
+                  {formatValue(stock.marketCap, 'volume')}B
+                </td>
+                <td className="px-4 py-3 text-gray-900">
+                  {stock.peRatio === 0 ? 'N/A' : formatValue(stock.peRatio, 'number')}
+                </td>
+                <td className="px-4 py-3">
+                  <div className="w-32 h-12 bg-gray-50 rounded p-1">
                     <SparklineChart 
                       data={stock.chartData} 
                       color={stock.change >= 0 ? '#16a34a' : '#dc2626'} 
+                      width={120}
+                      height={40}
                     />
                   </div>
                 </td>
@@ -254,6 +264,6 @@ export const StockGrid: React.FC<StockGridProps> = ({
           </tbody>
         </table>
       </div>
-    </Card>
+    </div>
   );
 };
